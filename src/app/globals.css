@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+/* ===============================================
+   File: globals.css
+
+   Purpose:
+   Global styles and design tokens for the QuickCarry Admin
+   Dashboard, sampled directly from the approved Figma admin panel
+   (dark sidebar, light content area, green brand accent, status
+   colors matching Orders by Status donut chart and pills).
+   =============================================== */
+
+:root {
+  --background: #f7f8f9;        /* light content area background */
+  --foreground: #1a1a1a;
+  --surface: #ffffff;            /* card background */
+  --border: #eef0f2;
+
+  --primary: #1b7a4c;            /* brand green — buttons, active nav, totals */
+  --primary-dark: #145c39;
+  --primary-light: #e8f5ee;
+
+  --sidebar-bg: #0f1a16;         /* near-black dark green sidebar */
+  --sidebar-hover: #16241e;
+  --sidebar-active: #1b7a4c;
+  --sidebar-text: #a8b3ae;
+
+  --success: #1b7a4c;
+  --success-soft: #e8f5ee;
+  --warning: #f5a623;
+  --warning-soft: #fef3e2;
+  --info: #2f80ed;
+  --info-soft: #eaf2fe;
+  --danger: #e0453a;
+  --danger-soft: #fceae9;
+
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-text: var(--sidebar-text);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
