@@ -1,66 +1,105 @@
-// ===============================================
-// File: StatCard.tsx
-//
-// Purpose:
-// One of the 5 overview metric cards on the Dashboard page
-// (Total Orders, Completed Orders, Active Riders, Total Customers,
-// Total Earnings), each with an icon, big number, % change label,
-// and a small sparkline chart underneath.
-// ===============================================
+import Link from "next/link";
+import type { ComponentType, SVGProps } from "react";
+import { ArrowDownRightIcon, ArrowUpRightIcon } from "@heroicons/react/24/solid";
+import { cn } from "@/lib/cn";
 
-"use client";
+export type StatTone = "brand" | "info" | "success" | "warning" | "danger" | "neutral";
 
-import { LineChart, Line, ResponsiveContainer } from "recharts";
+const TONES: Record<StatTone, string> = {
+  brand: "bg-primary-soft text-primary-accent",
+  info: "bg-info-soft text-info",
+  success: "bg-success-soft text-success",
+  warning: "bg-warning-soft text-warning",
+  danger: "bg-danger-soft text-danger",
+  neutral: "bg-neutral-soft text-neutral",
+};
 
 interface StatCardProps {
-  icon: React.ReactNode;
-  iconBg: string;
   label: string;
   value: string;
-  changePercent: number;
-  sparklineColor: string;
-  sparklineData: number[];
+  sub?: string;
+  icon: ComponentType<SVGProps<SVGSVGElement>>;
+  tone?: StatTone;
+  /** Signed percentage. Renders a direction-aware trend chip when present. */
+  delta?: number;
+  deltaLabel?: string;
+  /** Turns the whole tile into a link — used for the queue tiles. */
+  href?: string;
+  /**
+   * Draws attention when a number needs action (an unpaid queue, a balance
+   * under threshold). brails does this by flipping the whole card red; here
+   * it's a left accent bar so a row of tiles stays readable.
+   */
+  alert?: boolean;
 }
 
-export function StatCard({
-  icon,
-  iconBg,
+export default function StatCard({
   label,
   value,
-  changePercent,
-  sparklineColor,
-  sparklineData,
+  sub,
+  icon: Icon,
+  tone = "brand",
+  delta,
+  deltaLabel = "vs last week",
+  href,
+  alert,
 }: StatCardProps) {
-  const chartData = sparklineData.map((v, i) => ({ i, v }));
+  const isUp = (delta ?? 0) >= 0;
+  const TrendIcon = isUp ? ArrowUpRightIcon : ArrowDownRightIcon;
 
-  return (
-    <div className="rounded-xl bg-surface border border-border p-5">
-      <div className="flex items-center gap-3 mb-3">
-        <div
-          className="h-9 w-9 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: iconBg }}
+  const body = (
+    <>
+      {alert && (
+        <span
+          aria-hidden
+          className="absolute inset-y-0 left-0 w-1 rounded-l-2xl bg-warning"
+        />
+      )}
+      <div className="flex items-start justify-between gap-3">
+        <p className="truncate text-base font-medium text-secondary-foreground">{label}</p>
+        <span
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-xl",
+            TONES[tone],
+          )}
         >
-          {icon}
-        </div>
+          <Icon className="size-4.5" />
+        </span>
       </div>
-      <p className="text-xs text-text-secondary mb-1">{label}</p>
-      <p className="text-2xl font-bold">{value}</p>
-      <p className="text-xs text-primary mt-1">
-        ↑ {changePercent}% from last week
-      </p>
-      <div className="h-10 mt-2 -mx-1">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <Line
-              type="monotone"
-              dataKey="v"
-              stroke={sparklineColor}
-              strokeWidth={2}
-              dot={false}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+
+      <p className="tnum mt-3 text-3xl font-bold tracking-tight text-foreground">{value}</p>
+
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
+        {delta !== undefined && (
+          <span
+            className={cn(
+              "inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-medium",
+              isUp ? "bg-success-soft text-success" : "bg-danger-soft text-danger",
+            )}
+          >
+            <TrendIcon className="size-3" />
+            {Math.abs(delta)}%
+          </span>
+        )}
+        {(sub || delta !== undefined) && (
+          <span className="truncate text-secondary-foreground">
+            {delta !== undefined ? deltaLabel : sub}
+          </span>
+        )}
       </div>
-    </div>
+    </>
+  );
+
+  const className = cn(
+    "relative overflow-hidden rounded-2xl border border-border bg-card p-5 shadow-card",
+    href && "transition-shadow hover:shadow-card-hover",
+  );
+
+  return href ? (
+    <Link href={href} className={cn(className, "block")}>
+      {body}
+    </Link>
+  ) : (
+    <div className={className}>{body}</div>
   );
 }

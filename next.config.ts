@@ -1,7 +1,11 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactCompiler: true,
+  // There are other lockfiles above this directory (it lives under
+  // Downloads); without this, Turbopack infers the wrong workspace root.
+  turbopack: { root: path.join(__dirname) },
 };
 
 export default nextConfig;
