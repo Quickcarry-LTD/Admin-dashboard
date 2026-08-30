@@ -3,68 +3,269 @@
 /* ===============================================
    File: globals.css
 
-   Purpose:
-   Global styles and design tokens for the QuickCarry Admin
-   Dashboard, sampled directly from the approved Figma admin panel
-   (dark sidebar, light content area, green brand accent, status
-   colors matching Orders by Status donut chart and pills).
+   The QuickCarry Admin design system, rebuilt in the enterprise
+   language of brails-admin: slate ground, white rounded cards with
+   soft elevation, brand blue accent, and a compact type scale.
+
+   Three things here are ported deliberately from brails-admin's
+   tailwind.config.js rather than reinvented, because they are what
+   actually make it read as "enterprise" rather than as a consumer app:
+
+   1. The type scale is shifted down a step — `text-base` is 14px, not
+      16px. Every size below is smaller than stock Tailwind. This is
+      what lets a dense table and a form sit on the same screen.
+   2. The breakpoints are Material's (600/960/1280/1440), not
+      Tailwind's (640/768/1024/1280). `md` at 960 is the point where an
+      admin layout can afford a permanent sidebar.
+   3. `gray` is aliased to `slate`, so every neutral in the app is
+      cool-toned.
    =============================================== */
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* ---------- Type scale (brails) ---------- */
+  --text-xs: 0.625rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.8125rem;
+  --text-base: 0.875rem;
+  --text-lg: 1rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.25rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 2rem;
+  --text-5xl: 2.25rem;
+  --text-6xl: 2.5rem;
+  --text-7xl: 3rem;
+
+  /* ---------- Breakpoints (Material, via brails) ---------- */
+  --breakpoint-sm: 600px;
+  --breakpoint-md: 960px;
+  --breakpoint-lg: 1280px;
+  --breakpoint-xl: 1440px;
+
+  /* ---------- Brand blue ----------
+     Anchored on brails' BRAND_BLUE #0043EA at 600, which is where a
+     Fuse-generated palette puts the seed colour. */
+  --color-primary-50: #eef3ff;
+  --color-primary-100: #dae4ff;
+  --color-primary-200: #bccfff;
+  --color-primary-300: #8eaeff;
+  --color-primary-400: #5981ff;
+  --color-primary-500: #3355ff;
+  --color-primary-600: #0043ea;
+  --color-primary-700: #0035bd;
+  --color-primary-800: #062f97;
+  --color-primary-900: #0c2e77;
+  --color-primary-950: #081c49;
+}
+
+/* ---------- Semantic tokens ---------------------------------------
+   Components reference only these, never a raw slate/blue step, so the
+   whole app re-themes from this block. */
 :root {
-  --background: #f7f8f9;        /* light content area background */
-  --foreground: #1a1a1a;
-  --surface: #ffffff;            /* card background */
-  --border: #eef0f2;
+  --background: #f1f5f9; /* slate-100 — the page ground */
+  --card: #ffffff;
+  --card-muted: #f8fafc; /* slate-50 — table headers, inset rows */
+  --popover: #ffffff;
 
-  --primary: #1b7a4c;            /* brand green — buttons, active nav, totals */
-  --primary-dark: #145c39;
-  --primary-light: #e8f5ee;
+  --foreground: #0f172a; /* slate-900 */
+  --secondary-foreground: #475569; /* slate-600 — labels, meta */
+  /* Measured, not picked: slate-400 came out at 2.56:1 on a white card.
+     This clears 4.5:1 against card, card-muted and the page ground. */
+  --muted-foreground: #647082;
 
-  --sidebar-bg: #0f1a16;         /* near-black dark green sidebar */
-  --sidebar-hover: #16241e;
-  --sidebar-active: #1b7a4c;
-  --sidebar-text: #a8b3ae;
+  --border: #e2e8f0; /* slate-200 — a divider between like surfaces */
+  /* Inputs sit white-on-white, so their border is the only thing that
+     identifies the control: WCAG 1.4.11 wants 3:1 for that, and slate-300
+     gave 1.48:1. */
+  --input: #8b93a0;
+  --ring: rgba(0, 67, 234, 0.25);
 
-  --success: #1b7a4c;
-  --success-soft: #e8f5ee;
-  --warning: #f5a623;
-  --warning-soft: #fef3e2;
-  --info: #2f80ed;
-  --info-soft: #eaf2fe;
-  --danger: #e0453a;
-  --danger-soft: #fceae9;
+  --primary: #0043ea;
+  --primary-hover: #0035bd;
+  --primary-foreground: #ffffff;
+  --primary-soft: #eef3ff;
+  /* The blue used for TEXT (links, eyebrows, brand chips). In light mode it
+     is the brand blue; in dark the brand blue is too dim to read, but must
+     stay dark enough to carry white button labels — so the two roles split. */
+  --primary-accent: #0043ea;
 
-  --text-secondary: #6b7280;
-  --text-tertiary: #9ca3af;
+  /* Status. `-soft` is the chip fill, the base is text/icon on white. */
+  /* Each of these is the badge's TEXT colour on its own -soft fill, so all
+     are tuned to clear 4.5:1 there and on a white card. The vivid mid-tones
+     they replaced sat between 2.9 and 4.3. */
+  --success: #107a38;
+  --success-soft: #dcfce7;
+  --warning: #a05a06;
+  --warning-soft: #fef3c7;
+  --danger: #c31d1d;
+  --danger-soft: #fee2e2;
+  --info: #0170a8;
+  --info-soft: #e0f2fe;
+  --neutral: #5d6b80;
+  --neutral-soft: #f1f5f9;
+
+  /* Charts — brand blue first, then a cool ramp that stays legible
+     against a white card in both themes. */
+  --chart-1: #0043ea;
+  --chart-2: #0284c7;
+  --chart-3: #7c3aed;
+  --chart-4: #16a34a;
+  --chart-5: #d97706;
+  --chart-grid: #e2e8f0;
+
+  /* Elevation — soft and low, the enterprise register. */
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.05);
+  --shadow-pop: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #0b1120;
+  --card: #111827;
+  --card-muted: #1a2334;
+  --popover: #111827;
+
+  --foreground: #e2e8f0;
+  --secondary-foreground: #94a3b8;
+  --muted-foreground: #808d9f;
+
+  --border: #1e293b;
+  --input: #5b6675;
+  --ring: rgba(51, 85, 255, 0.35);
+
+  --primary: #3355ff;
+  --primary-hover: #5981ff;
+  --primary-foreground: #ffffff;
+  --primary-soft: #14204a;
+  /* #3355ff reads at only 3.3:1 on a dark card — fine as a button surface
+     carrying white text, too dim as link text. */
+  --primary-accent: #7089ff;
+
+  --success: #4ade80;
+  --success-soft: #14321f;
+  --warning: #fbbf24;
+  --warning-soft: #3a2a10;
+  --danger: #f87171;
+  --danger-soft: #3b1618;
+  --info: #38bdf8;
+  --info-soft: #0c2a3d;
+  --neutral: #94a3b8;
+  --neutral-soft: #1a2334;
+
+  --chart-1: #5981ff;
+  --chart-2: #38bdf8;
+  --chart-3: #a78bfa;
+  --chart-4: #4ade80;
+  --chart-5: #fbbf24;
+  --chart-grid: #1e293b;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.55), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 20px 25px -5px rgba(0, 0, 0, 0.65), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-card: var(--card);
+  --color-card-muted: var(--card-muted);
+  --color-popover: var(--popover);
+
   --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted-foreground: var(--muted-foreground);
+
   --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
   --color-primary: var(--primary);
-  --color-primary-dark: var(--primary-dark);
-  --color-primary-light: var(--primary-light);
-  --color-sidebar-bg: var(--sidebar-bg);
-  --color-sidebar-hover: var(--sidebar-hover);
-  --color-sidebar-active: var(--sidebar-active);
-  --color-sidebar-text: var(--sidebar-text);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-accent: var(--primary-accent);
+
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
-  --color-info: var(--info);
-  --color-info-soft: var(--info-soft);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-tertiary: var(--text-tertiary);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-neutral: var(--neutral);
+  --color-neutral-soft: var(--neutral-soft);
+
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-pop: var(--shadow-pop);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-mono-face), ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* One visible focus treatment for the whole app. */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Fields carry their own ring, so the global outline would double up. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
+::selection {
+  background: var(--ring);
+}
+
+/* Numeric columns line up digit-for-digit. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--input) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--input);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
